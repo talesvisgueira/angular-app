@@ -1,37 +1,37 @@
 {
-  "hash": "79825dea",
-  "configHash": "a43b4a09",
+  "hash": "3620c600",
+  "configHash": "746f40af",
   "lockfileHash": "f337fcfd",
-  "browserHash": "b5830207",
+  "browserHash": "fa82c8d2",
   "optimized": {
     "@angular/common/http": {
       "src": "../../../../../../../../node_modules/.pnpm/@angular+common@22.2.2_@angular+core@22.2.2_@angular+compiler@22.2.2_rxjs@7.8.2__rxjs@7.8.2/node_modules/@angular/common/fesm2022/http.mjs",
       "file": "@angular_common_http.js",
-      "fileHash": "c480ed82",
+      "fileHash": "c26ed44e",
       "needsInterop": false
     },
     "@angular/core": {
       "src": "../../../../../../../../node_modules/.pnpm/@angular+core@22.2.2_@angular+compiler@22.2.2_rxjs@7.8.2/node_modules/@angular/core/fesm2022/core.mjs",
       "file": "@angular_core.js",
-      "fileHash": "84016773",
+      "fileHash": "20ee23e1",
       "needsInterop": false
     },
     "@angular/forms": {
       "src": "../../../../../../../../node_modules/.pnpm/@angular+forms@22.2.2_@angular+common@22.2.2_@angular+core@22.2.2_@angular+compiler@22._2a274ba7b1603af10be63793d8f68967/node_modules/@angular/forms/fesm2022/forms.mjs",
       "file": "@angular_forms.js",
-      "fileHash": "4731d62e",
+      "fileHash": "f44fd9a3",
       "needsInterop": false
     },
     "@angular/platform-browser": {
       "src": "../../../../../../../../node_modules/.pnpm/@angular+platform-browser@22.2.2_@angular+common@22.2.2_@angular+core@22.2.2_@angular+c_f63d9b88d9fce11969279acd13484a59/node_modules/@angular/platform-browser/fesm2022/platform-browser.mjs",
       "file": "@angular_platform-browser.js",
-      "fileHash": "ce89c310",
+      "fileHash": "e2b51e2e",
       "needsInterop": false
     },
     "@angular/router": {
       "src": "../../../../../../../../node_modules/.pnpm/@angular+router@22.2.2_@angular+common@22.2.2_@angular+core@22.2.2_@angular+compiler@22_cf28279fcf915a6d3c11ad1b93c4049e/node_modules/@angular/router/fesm2022/router.mjs",
       "file": "@angular_router.js",
-      "fileHash": "1c409521",
+      "fileHash": "9db106cc",
       "needsInterop": false
     }
   },
