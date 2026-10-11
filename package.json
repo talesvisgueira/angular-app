@@ -1,0 +1,23 @@
+{
+  "name": "angular-fastify-monorepo",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "pnpm@12.10.1",
+  "scripts": {
+    "build": "pnpm -r build",
+    "build:shared": "pnpm --filter @monorepo/shared build",
+    "dev": "pnpm build:shared && pnpm -r --parallel --filter @monorepo/frontend --filter @monorepo/backend dev",
+    "dev:frontend": "pnpm --filter @monorepo/frontend start",
+    "dev:backend": "pnpm --filter @monorepo/backend dev",
+    "start": "pnpm dev",
+    "test": "pnpm -r --if-present test",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "prettier": "^3.8.1"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
