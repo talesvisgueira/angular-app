@@ -3,7 +3,6 @@ Contributing
 
 Bem vindo as contribuições!
 
-
 ## Bug Reports
 
 ## Pull Requests

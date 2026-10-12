@@ -28,7 +28,7 @@ Pacotes do workspace:
 
 ## Requisitos
 
-- Project Requirements Document - PRD  [Detalhe](docs/PRD.md)
+- Project Requirements Document - PRD [Detalhe](docs/PRD.md)
 - Node.js >= 22
 - pnpm 12 (via `corepack enable`)
 

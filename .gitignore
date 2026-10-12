@@ -7,6 +7,9 @@ out-tsc/
 tmp/
 bazel-out/
 
+# Local SQLite database
+apps/backend/data/
+
 # Angular
 .angular/cache/
 .sass-cache/
