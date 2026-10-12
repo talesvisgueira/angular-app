@@ -4,6 +4,11 @@ Monorepo gerenciado com **pnpm workspaces**. Contém o frontend Angular (com for
 
 ## Estrutura
 
+<p align="center">
+  <img src="docs/images/design.png">
+  <br/>
+</p>
+
 ```
 .
 ├── apps/
@@ -23,6 +28,7 @@ Pacotes do workspace:
 
 ## Requisitos
 
+- Project Requirements Document - PRD  [Detalhe](docs/PRD.md)
 - Node.js >= 22
 - pnpm 12 (via `corepack enable`)
 

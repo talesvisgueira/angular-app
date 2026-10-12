@@ -10,7 +10,7 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
 
     const { email, password } = request.body;
 
-    if (password !== 'password123') {
+    if (password !== 'taver5') {
       return reply.status(401).send({ message: 'Credenciais inválidas.' });
     }
 
