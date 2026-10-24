@@ -8,7 +8,7 @@ Expõe a administração dos dados do modelo RBAC e geográfico por uma API REST
 
 ### Requirement: CRUD das entidades administrativas
 
-O sistema SHALL expor, sob o prefixo `/api`, endpoints de criar, listar (com paginação simples por `limit`/`offset`), obter por `id`, atualizar e remover para cada uma das entidades persistidas: `person`, `user`, `organization`, `organization_user`, `organization_user_profile`, `profile`, `module`, `module_rule`, `profile_rule`, `organization_module`, `country` e `country_state`, no formato `POST/GET /api/<recurso>` e `GET/PATCH/DELETE /api/<recurso>/:id`.
+O sistema SHALL expor, sob o prefixo `/api`, endpoints de criar, listar (com paginação simples por `limit`/`offset`), obter por `id`, atualizar e remover para cada uma das entidades persistidas: `person`, `user`, `organization`, `organization_user`, `organization_user_profile`, `profile`, `module`, `module_rule`, `profile_rule`, `organization_module`, `country`, `state`, `city`, `person_address`, `person_phone`, `user_authentication_mode`, `system` e `module_organization`, no formato `POST/GET /api/<recurso>` e `GET/PATCH/DELETE /api/<recurso>/:id`.
 
 #### Scenario: Ciclo completo de um recurso
 
@@ -22,7 +22,7 @@ O sistema SHALL expor, sob o prefixo `/api`, endpoints de criar, listar (com pag
 
 #### Scenario: Relações respeitadas na criação
 
-- **WHEN** um registro é criado referenciando entidades relacionadas por chave estrangeira (por exemplo, `user` com `id` de uma `person`, `organization_module` com `organization_id` e `module_id`)
+- **WHEN** um registro é criado referenciando entidades relacionadas por chave estrangeira (por exemplo, `user` com `person_id` de uma `person`, `module` com `system_id` de um `system` e `organization_id` de uma `organization`, `city` com `state_id` de um `state`)
 - **THEN** o vínculo é persistido e respeita as FKs do modelo
 
 ### Requirement: Tratamento centralizado de erros da API
@@ -41,12 +41,12 @@ O sistema SHALL tratar erros de forma centralizada: corpo inválido ou campos ob
 
 #### Scenario: Violação de integridade referencial
 
-- **WHEN** uma operação fere FK ou unicidade (por exemplo, criar `country_state` sem país, remover uma `person` referenciada por um `user`, duplicar `sigla` de país)
+- **WHEN** uma operação fere FK ou unicidade (por exemplo, criar `state` sem país, remover uma `person` referenciada por um `user`, duplicar `short_name` de país)
 - **THEN** a resposta é 409 com `{ message }`
 
 ### Requirement: Documentação Swagger da API
 
-O sistema SHALL servir a especificação OpenAPI (JSON) da API e uma interface Swagger UI para todos os endpoints registrados (CRUD administrativo, `/health` e login demo), gerada a partir das definições das rotas, acessível em rotas dedicadas de documentação no próprio backend.
+O sistema SHALL servir a especificação OpenAPI (JSON) da API e uma interface Swagger UI para todos os endpoints registrados (CRUD administrativo, `/health` e login), gerada a partir das definições das rotas, acessível em rotas dedicadas de documentação no próprio backend.
 
 #### Scenario: Especificação OpenAPI disponível
 
@@ -60,14 +60,14 @@ O sistema SHALL servir a especificação OpenAPI (JSON) da API e uma interface S
 
 ### Requirement: Auditoria preenchida pela API
 
-O sistema SHALL preencher automaticamente, em toda criação via API, `user_created` (identificador do usuário responsável; enquanto não houver autenticação real, um valor de sistema), `data_created` e `data_updated`, e SHALL renovar `data_updated` a cada atualização via API.
+O sistema SHALL preencher automaticamente, em toda criação via API, `user_created`, `user_updated` (ambos com o identificador do usuário responsável; enquanto não houver autenticação real nas rotas CRUD, um valor de sistema), `data_created`, `data_updated` e `active` (verdadeiro quando não informado), e SHALL renovar `data_updated` e `user_updated` a cada atualização via API.
 
 #### Scenario: Criação via API carimba auditoria
 
 - **WHEN** um registro é criado por qualquer endpoint de CRUD
-- **THEN** o registro armazenado possui `user_created`, `data_created` e `data_updated` preenchidos
+- **THEN** o registro armazenado possui `user_created`, `user_updated`, `data_created` e `data_updated` preenchidos e `active` verdadeiro quando não informado
 
 #### Scenario: Atualização via API renova data_updated
 
 - **WHEN** um registro é atualizado por `PATCH`
-- **THEN** `data_updated` passa a indicar o momento da atualização e `data_created` permanece o valor original
+- **THEN** `data_updated` e `user_updated` passam a indicar a atualização e `data_created` permanece o valor original

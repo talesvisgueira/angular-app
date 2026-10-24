@@ -1,6 +1,1 @@
-{
-  "version": "5.0.3",
-  "results": [
-    ["angular-app:src/app/app.spec.ts", { "duration": 698.0674429999999, "failed": false }]
-  ]
-}
+{"version":"5.0.3","results":[["angular-app:src/app/app.spec.ts",{"duration":453.1118229999993,"failed":false}],["angular-app:src/app/session/session-store.spec.ts",{"duration":51.023581999998896,"failed":false}],["angular-app:src/app/session/auth-guard.spec.ts",{"duration":254.33705199999895,"failed":false}],["angular-app:src/app/login/login.spec.ts",{"duration":1103.8280720000002,"failed":false}],["angular-app:src/app/main/main.spec.ts",{"duration":1055.172043999999,"failed":false}],["angular-app:src/app/app.routes.spec.ts",{"duration":1462.5445499999987,"failed":false}]]}

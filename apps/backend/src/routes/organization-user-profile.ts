@@ -1,4 +1,4 @@
-import { buildCrudRoutes } from './crud-helpers.js';
+import { auditResponse, buildCrudRoutes } from './crud-helpers.js';
 import { OrganizationUserProfile } from '../entities/organization-user-profile.entity.js';
 
 const response = {
@@ -7,10 +7,7 @@ const response = {
     id: { type: 'string' },
     organizationUserId: { type: 'string' },
     profileId: { type: 'string' },
-    organizationId: { type: 'string' },
-    userCreated: { type: 'string' },
-    dataCreated: { type: 'string' },
-    dataUpdated: { type: 'string' },
+    ...auditResponse,
   },
 };
 
@@ -20,9 +17,8 @@ const body = {
     id: { type: 'string', maxLength: 36 },
     organizationUserId: { type: 'string', maxLength: 36 },
     profileId: { type: 'string', maxLength: 36 },
-    organizationId: { type: 'string', maxLength: 36 },
   },
-  required: ['organizationUserId', 'profileId', 'organizationId'],
+  required: ['organizationUserId', 'profileId'],
   additionalProperties: false,
 };
 

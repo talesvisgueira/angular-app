@@ -8,8 +8,8 @@ import {
   OneToOne,
   PrimaryColumn,
 } from 'typeorm';
+import { City } from './city.entity.js';
 import { Person } from './person.entity.js';
-import { CountryState } from './country-state.entity.js';
 
 @Entity('organization')
 export class Organization {
@@ -21,20 +21,20 @@ export class Organization {
   person!: Person;
 
   @Column('varchar', { length: 100 })
-  endereco!: string;
+  address!: string;
 
-  @Column('varchar', { name: 'bairro', length: 80 })
-  bairro!: string;
+  @Column('varchar', { length: 80 })
+  district!: string;
 
-  @Column('varchar', { name: 'countrystate_id', length: 36, nullable: true })
-  countrystateId!: string | null;
+  @Column('varchar', { name: 'city_id', length: 36, nullable: true })
+  cityId!: string | null;
 
-  @ManyToOne(() => CountryState, { nullable: true })
-  @JoinColumn({ name: 'countrystate_id' })
-  countryState!: CountryState | null;
+  @ManyToOne(() => City, { nullable: true })
+  @JoinColumn({ name: 'city_id' })
+  city!: City | null;
 
-  @Column('varchar', { length: 13, nullable: true })
-  telefone!: string | null;
+  @Column('varchar', { name: 'zip_code', length: 10, nullable: true })
+  zipCode!: string | null;
 
   @Column('varchar', { name: 'parent_id', length: 36, nullable: true })
   parentId!: string | null;
@@ -43,11 +43,17 @@ export class Organization {
   @JoinColumn({ name: 'parent_id' })
   parent!: Organization | null;
 
+  @Column('boolean', { default: true })
+  active!: boolean;
+
   @Column('varchar', { name: 'user_created', length: 36 })
   userCreated!: string;
 
   @Column({ name: 'data_created', type: 'datetime' })
   dataCreated!: Date;
+
+  @Column('varchar', { name: 'user_updated', length: 36 })
+  userUpdated!: string;
 
   @Column({ name: 'data_updated', type: 'datetime' })
   dataUpdated!: Date;

@@ -1,15 +1,13 @@
-import { buildCrudRoutes } from './crud-helpers.js';
+import { auditResponse, buildCrudRoutes } from './crud-helpers.js';
 import { Country } from '../entities/country.entity.js';
 
 const response = {
   type: 'object',
   properties: {
     id: { type: 'string' },
-    sigla: { type: 'string' },
-    nome: { type: 'string' },
-    userCreated: { type: 'string' },
-    dataCreated: { type: 'string' },
-    dataUpdated: { type: 'string' },
+    shortName: { type: 'string' },
+    name: { type: 'string' },
+    ...auditResponse,
   },
 };
 
@@ -17,10 +15,10 @@ const body = {
   type: 'object',
   properties: {
     id: { type: 'string', maxLength: 36 },
-    sigla: { type: 'string', maxLength: 15 },
-    nome: { type: 'string', maxLength: 80 },
+    shortName: { type: 'string', maxLength: 2 },
+    name: { type: 'string', maxLength: 80 },
   },
-  required: ['sigla', 'nome'],
+  required: ['shortName', 'name'],
   additionalProperties: false,
 };
 

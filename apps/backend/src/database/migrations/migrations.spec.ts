@@ -3,19 +3,23 @@ import { DataSource } from 'typeorm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { ENTITIES, MIGRATIONS } from '../data-source.js';
 import { Country } from '../../entities/country.entity.js';
-import { CountryState } from '../../entities/country-state.entity.js';
-import { Organization } from '../../entities/organization.entity.js';
+import { Module } from '../../entities/module.entity.js';
 import { OrganizationModule } from '../../entities/organization-module.entity.js';
+import { Organization } from '../../entities/organization.entity.js';
 import { Person } from '../../entities/person.entity.js';
+import { State } from '../../entities/state.entity.js';
 import { User } from '../../entities/user.entity.js';
 
-const AUDIT = { userCreated: '00000000-0000-0000-0000-000000000000' };
+const AUDIT = {
+  userCreated: '00000000-0000-0000-0000-000000000000',
+  userUpdated: '00000000-0000-0000-0000-000000000000',
+};
 
 function person(overrides: Partial<Person> = {}): Person {
   return Object.assign(
     new Person(),
     {
-      codigo: 'P001',
+      code: 'P001',
       name: 'Pessoa Raiz',
       shortName: 'P1',
       email: 'p1@example.com',
@@ -28,16 +32,16 @@ function person(overrides: Partial<Person> = {}): Person {
 async function createPersonWithOrganization(
   dataSource: DataSource,
   personId: string,
-  overrides: { codigo: string; shortName: string; email: string },
+  overrides: { code: string; shortName: string; email: string },
 ): Promise<Organization> {
   const personRepo = dataSource.getRepository(Person);
   const orgRepo = dataSource.getRepository(Organization);
-  await personRepo.save(person({ id: personId, ...overrides, name: `Pessoa ${overrides.codigo}` }));
+  await personRepo.save(person({ id: personId, ...overrides, name: `Pessoa ${overrides.code}` }));
   return orgRepo.save(
     orgRepo.create({
       id: personId,
-      endereco: 'Rua 1',
-      bairro: 'Centro',
+      address: 'Rua 1',
+      district: 'Centro',
       ...AUDIT,
     }),
   );
@@ -62,22 +66,26 @@ describe('Esquema migrado (violações de FK ponta a ponta)', () => {
     await dataSource.destroy();
   });
 
-  it('aplica todas as migrations e cria as 12 tabelas de entidades', () => {
+  it('aplica todas as migrations e cria as 18 tabelas de entidades', () => {
     const tables = dataSource.entityMetadatas.map((m) => m.tableName).sort();
-    expect(tables).toHaveLength(12);
-    expect(tables).toContain('country');
-    expect(tables).toContain('country_state');
-    expect(tables).toContain('organization_module');
+    expect(tables).toHaveLength(18);
+    expect(tables).toContain('state');
+    expect(tables).toContain('city');
+    expect(tables).toContain('person_address');
+    expect(tables).toContain('person_phone');
+    expect(tables).toContain('user_authentication_mode');
+    expect(tables).toContain('system');
+    expect(tables).toContain('module_organization');
   });
 
   it('organization persiste com id herdado de person e aceita nulos', async () => {
     const org = await createPersonWithOrganization(
       dataSource,
       '11111111-1111-1111-1111-111111111111',
-      { codigo: 'P001', shortName: 'P1', email: 'p1@example.com' },
+      { code: 'P001', shortName: 'P1', email: 'p1@example.com' },
     );
-    expect(org.countrystateId).toBeNull();
-    expect(org.telefone).toBeNull();
+    expect(org.cityId).toBeNull();
+    expect(org.zipCode).toBeNull();
     expect(org.parentId).toBeNull();
   });
 
@@ -85,20 +93,20 @@ describe('Esquema migrado (violações de FK ponta a ponta)', () => {
     const orgRepo = dataSource.getRepository(Organization);
     const org = orgRepo.create({
       id: '22222222-2222-2222-2222-222222222222',
-      endereco: 'Rua 2',
-      bairro: 'Centro',
+      address: 'Rua 2',
+      district: 'Centro',
       ...AUDIT,
     });
     await expect(orgRepo.save(org)).rejects.toThrow();
   });
 
-  it('country_state sem país falha por FK', async () => {
-    const repo = dataSource.getRepository(CountryState);
+  it('state sem país falha por FK', async () => {
+    const repo = dataSource.getRepository(State);
     const state = repo.create({
       id: '33333333-3333-3333-3333-333333333333',
       countryId: '44444444-4444-4444-4444-444444444444',
-      sigla: 'SP',
-      nome: 'São Paulo',
+      shortName: 'SP',
+      name: 'São Paulo',
       ...AUDIT,
     });
     await expect(repo.save(state)).rejects.toThrow();
@@ -117,25 +125,26 @@ describe('Esquema migrado (violações de FK ponta a ponta)', () => {
 
   it('organization com parent_id inexistente falha por FK', async () => {
     await createPersonWithOrganization(dataSource, '77777777-7777-7777-7777-777777777777', {
-      codigo: 'P002',
+      code: 'P002',
       shortName: 'P2',
       email: 'p2@example.com',
     });
     const orgRepo = dataSource.getRepository(Organization);
     const child = orgRepo.create({
       id: '77777777-7777-7777-7777-777777777777',
-      endereco: 'Rua 3',
-      bairro: 'Centro',
+      address: 'Rua 3',
+      district: 'Centro',
       parentId: '88888888-8888-8888-8888-888888888888',
       ...AUDIT,
     });
     await expect(orgRepo.save(child)).rejects.toThrow();
   });
 
-  it('user sem person raiz correspondente falha por FK', async () => {
+  it('user sem person correspondente falha por FK', async () => {
     const repo = dataSource.getRepository(User);
     const user = repo.create({
       id: '99999999-9999-9999-9999-999999999999',
+      personId: '99999999-9999-9999-9999-999999999998',
       username: 'sem-pessoa',
       password: 'hash',
       active: true,
@@ -144,12 +153,12 @@ describe('Esquema migrado (violações de FK ponta a ponta)', () => {
     await expect(repo.save(user)).rejects.toThrow();
   });
 
-  it('user persiste sem organization_id e a auditoria é preenchida', async () => {
+  it('user persiste com person_id e a auditoria é preenchida', async () => {
     const personRepo = dataSource.getRepository(Person);
-    await personRepo.save(
+    const savedPerson = await personRepo.save(
       person({
         id: 'aaaaaaaa-1111-1111-1111-111111111111',
-        codigo: 'P010',
+        code: 'P010',
         shortName: 'P10',
         email: 'p10@example.com',
         ...AUDIT,
@@ -158,13 +167,16 @@ describe('Esquema migrado (violações de FK ponta a ponta)', () => {
     const repo = dataSource.getRepository(User);
     const saved = await repo.save(
       repo.create({
-        id: 'aaaaaaaa-1111-1111-1111-111111111111',
+        id: 'bbbbbbbb-1111-1111-1111-111111111111',
+        personId: savedPerson.id,
         username: 'com-pessoa',
         password: 'hash',
         active: true,
         ...AUDIT,
       }),
     );
+    expect(saved.authenticationMode).toBe('PASSWORD');
+    expect(saved.userUpdated).toBe(AUDIT.userUpdated);
     expect(saved.dataCreated).toBeInstanceOf(Date);
     expect(saved.dataUpdated).toBeInstanceOf(Date);
     expect(saved.dataCreated.getTime()).toBe(saved.dataUpdated.getTime());
@@ -175,7 +187,7 @@ describe('Esquema migrado (violações de FK ponta a ponta)', () => {
     const saved = await repo.save(
       person({
         id: 'aaaaaaaa-2222-2222-2222-222222222222',
-        codigo: 'P011',
+        code: 'P011',
         shortName: 'P11',
         email: 'p11@example.com',
         ...AUDIT,
@@ -190,27 +202,39 @@ describe('Esquema migrado (violações de FK ponta a ponta)', () => {
     expect(reloaded.dataUpdated.getTime()).toBeGreaterThan(createdAt);
   });
 
-  it('country aceita país com sigla única e recusa duplicada', async () => {
+  it('country aceita short_name único e recusa duplicada', async () => {
     const repo = dataSource.getRepository(Country);
     await repo.save(
       repo.create({
         id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
-        sigla: 'BR',
-        nome: 'Brasil',
+        shortName: 'BR',
+        name: 'Brasil',
         ...AUDIT,
       }),
     );
-    const found = await repo.findOneByOrFail({ sigla: 'BR' });
-    expect(found.nome).toBe('Brasil');
+    const found = await repo.findOneByOrFail({ shortName: 'BR' });
+    expect(found.name).toBe('Brasil');
     await expect(
       repo.save(
         repo.create({
           id: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb',
-          sigla: 'BR',
-          nome: 'Duplicado',
+          shortName: 'BR',
+          name: 'Duplicado',
           ...AUDIT,
         }),
       ),
     ).rejects.toThrow();
+  });
+
+  it('module sem system correspondente falha por FK', async () => {
+    const repo = dataSource.getRepository(Module);
+    const mod = repo.create({
+      id: 'cccccccc-1111-1111-1111-111111111111',
+      systemId: 'cccccccc-2222-2222-2222-222222222222',
+      organizationId: 'cccccccc-3333-3333-3333-333333333333',
+      name: 'Módulo órfão',
+      ...AUDIT,
+    });
+    await expect(repo.save(mod)).rejects.toThrow();
   });
 });

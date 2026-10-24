@@ -4,7 +4,7 @@ import {
   Column,
   Entity,
   JoinColumn,
-  OneToOne,
+  ManyToOne,
   PrimaryColumn,
 } from 'typeorm';
 import { Person } from './person.entity.js';
@@ -14,8 +14,11 @@ export class User {
   @PrimaryColumn('varchar', { length: 36 })
   id!: string;
 
-  @OneToOne(() => Person, { nullable: false })
-  @JoinColumn({ name: 'id' })
+  @Column('varchar', { name: 'person_id', length: 36 })
+  personId!: string;
+
+  @ManyToOne(() => Person, { nullable: false })
+  @JoinColumn({ name: 'person_id' })
   person!: Person;
 
   @Column('varchar', { length: 100, unique: true })
@@ -23,6 +26,9 @@ export class User {
 
   @Column('varchar', { length: 200 })
   password!: string;
+
+  @Column('varchar', { name: 'authentication_mode', length: 20, default: 'PASSWORD' })
+  authenticationMode!: string;
 
   @Column('boolean', { default: true })
   active!: boolean;
@@ -32,6 +38,9 @@ export class User {
 
   @Column({ name: 'data_created', type: 'datetime' })
   dataCreated!: Date;
+
+  @Column('varchar', { name: 'user_updated', length: 36 })
+  userUpdated!: string;
 
   @Column({ name: 'data_updated', type: 'datetime' })
   dataUpdated!: Date;

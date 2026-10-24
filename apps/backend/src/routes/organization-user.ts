@@ -1,4 +1,4 @@
-import { buildCrudRoutes } from './crud-helpers.js';
+import { auditResponse, buildCrudRoutes } from './crud-helpers.js';
 import { OrganizationUser } from '../entities/organization-user.entity.js';
 
 const response = {
@@ -7,9 +7,7 @@ const response = {
     id: { type: 'string' },
     organizationId: { type: 'string' },
     userId: { type: 'string' },
-    userCreated: { type: 'string' },
-    dataCreated: { type: 'string' },
-    dataUpdated: { type: 'string' },
+    ...auditResponse,
   },
 };
 

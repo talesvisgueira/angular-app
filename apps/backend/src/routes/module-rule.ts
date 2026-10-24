@@ -1,4 +1,4 @@
-import { buildCrudRoutes } from './crud-helpers.js';
+import { auditResponse, buildCrudRoutes } from './crud-helpers.js';
 import { ModuleRule } from '../entities/module-rule.entity.js';
 
 const response = {
@@ -8,10 +8,7 @@ const response = {
     moduleId: { type: 'string' },
     name: { type: 'string' },
     description: { type: ['string', 'null'] },
-    organizationId: { type: 'string' },
-    userCreated: { type: 'string' },
-    dataCreated: { type: 'string' },
-    dataUpdated: { type: 'string' },
+    ...auditResponse,
   },
 };
 
@@ -22,9 +19,8 @@ const body = {
     moduleId: { type: 'string', maxLength: 36 },
     name: { type: 'string', maxLength: 80 },
     description: { type: ['string', 'null'], maxLength: 400 },
-    organizationId: { type: 'string', maxLength: 36 },
   },
-  required: ['moduleId', 'name', 'organizationId'],
+  required: ['moduleId', 'name'],
   additionalProperties: false,
 };
 

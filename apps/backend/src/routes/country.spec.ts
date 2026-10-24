@@ -1,85 +1,83 @@
-import 'reflect-metadata';
-import Fastify, { FastifyInstance } from 'fastify';
+import { randomUUID } from 'node:crypto';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { DataSource } from 'typeorm';
-import { ENTITIES, MIGRATIONS } from '../database/data-source.js';
-import { registerErrorHandler } from '../plugins/error-handler.js';
+import { Country } from '../entities/country.entity.js';
+import { createCrudTestApp, expectCrudCycle } from '../testing/harness.js';
 import { countryRoutes } from './country.js';
+import { stateRoutes } from './state.js';
 
-describe('CRUD de country (integração com banco migrado)', () => {
-  let dataSource: DataSource;
-  let app: FastifyInstance;
+describe('CRUD de country e state (integração com banco migrado)', () => {
+  let app: Awaited<ReturnType<typeof createCrudTestApp>>['app'];
+  let dataSource: Awaited<ReturnType<typeof createCrudTestApp>>['dataSource'];
+  let close: () => Promise<void>;
 
   beforeAll(async () => {
-    dataSource = new DataSource({
-      type: 'better-sqlite3',
-      database: ':memory:',
-      entities: ENTITIES,
-      migrations: MIGRATIONS,
-      synchronize: false,
-      migrationsRun: true,
+    const testApp = await createCrudTestApp((instance) => {
+      instance.register(countryRoutes, { prefix: '/api/country' });
+      instance.register(stateRoutes, { prefix: '/api/state' });
     });
-    await dataSource.initialize();
-
-    app = Fastify({ logger: false });
-    app.decorate('dataSource', dataSource);
-    registerErrorHandler(app);
-    await app.register(countryRoutes, { prefix: '/api/country' });
-    await app.ready();
+    app = testApp.app;
+    dataSource = testApp.dataSource;
+    close = testApp.close;
   });
 
   afterAll(async () => {
-    await app.close();
-    await dataSource.destroy();
+    await close();
   });
 
-  it('ciclo completo preenchendo auditoria e renovando data_updated no PATCH', async () => {
-    const created = await app.inject({
-      method: 'POST',
-      url: '/api/country',
-      payload: { sigla: 'BR', nome: 'Brasil' },
+  it('ciclo completo de country preenchendo auditoria e renovando data_updated no PATCH', async () => {
+    const created = await expectCrudCycle(app, {
+      base: '/api/country',
+      create: { shortName: 'BR', name: 'Brasil' },
+      patch: { name: 'Brasil (atual)' },
+      patchField: 'name',
     });
-    expect(created.statusCode).toBe(201);
-    const createdBody = created.json();
-    expect(createdBody.userCreated).toBe('system');
-    expect(createdBody.dataCreated).toBeTruthy();
-    expect(createdBody.dataUpdated).toBeTruthy();
+    expect(created.userCreated).toBe('system');
+    expect(created.userUpdated).toBe('system');
+    expect(created.active).toBe(true);
+  });
 
-    const listed = await app.inject({ method: 'GET', url: '/api/country?limit=10&offset=0' });
-    expect(listed.statusCode).toBe(200);
-    expect(listed.json()).toMatchObject({ total: 1 });
-
-    const updated = await app.inject({
-      method: 'PATCH',
-      url: `/api/country/${createdBody.id}`,
-      payload: { nome: 'Brasil (atual)' },
-    });
-    expect(updated.statusCode).toBe(200);
-    const updatedBody = updated.json();
-    expect(updatedBody.nome).toBe('Brasil (atual)');
-    expect(new Date(updatedBody.dataUpdated).getTime()).toBeGreaterThan(
-      new Date(updatedBody.dataCreated).getTime(),
+  it('ciclo completo de state vinculado a um país existente', async () => {
+    const repo = dataSource.getRepository(Country);
+    const country = await repo.save(
+      repo.create({
+        id: randomUUID(),
+        shortName: 'AR',
+        name: 'Argentina',
+        userCreated: 'system',
+        userUpdated: 'system',
+      }),
     );
 
-    const removed = await app.inject({ method: 'DELETE', url: `/api/country/${createdBody.id}` });
-    expect(removed.statusCode).toBe(204);
-
-    const missing = await app.inject({ method: 'GET', url: `/api/country/${createdBody.id}` });
-    expect(missing.statusCode).toBe(404);
+    const created = await expectCrudCycle(app, {
+      base: '/api/state',
+      create: { countryId: country.id, shortName: 'BA', name: 'Buenos Aires' },
+      patch: { name: 'Buenos Aires (atual)' },
+      patchField: 'name',
+    });
+    expect(created.countryId).toBe(country.id);
   });
 
-  it('sigla duplicada responde 409', async () => {
+  it('country com short_name duplicado responde 409', async () => {
     const first = await app.inject({
       method: 'POST',
       url: '/api/country',
-      payload: { sigla: 'AR', nome: 'Argentina' },
+      payload: { shortName: 'PT', name: 'Portugal' },
     });
     expect(first.statusCode).toBe(201);
     const duplicate = await app.inject({
       method: 'POST',
       url: '/api/country',
-      payload: { sigla: 'AR', nome: 'Duplicado' },
+      payload: { shortName: 'PT', name: 'Duplicado' },
     });
     expect(duplicate.statusCode).toBe(409);
+  });
+
+  it('state com país inexistente responde 409', async () => {
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/state',
+      payload: { countryId: '00000000-0000-0000-0000-000000000000', shortName: 'XX', name: 'Fantasma' },
+    });
+    expect(response.statusCode).toBe(409);
   });
 });

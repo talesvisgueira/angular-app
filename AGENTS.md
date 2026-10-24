@@ -13,6 +13,7 @@ pnpm-workspaces monorepo: Angular 22 frontend + Fastify/TypeScript backend + sha
 - Install: `corepack enable && pnpm install` (pnpm 12 is pinned via `packageManager`; do NOT use npm/yarn).
 - Dev (both apps): `pnpm dev` — builds `shared` first, then runs frontend (:4200) + backend (:3000) in parallel.
 - Dev individually: `pnpm dev:frontend` / `pnpm dev:backend`.
+- Migrations: `pnpm migration:run` / `pnpm migration:revert` — applies/reverts the backend TypeORM migrations (delegates to `@monorepo/backend`).
 - Build: `pnpm build` — `pnpm -r build`, topological order. `shared` MUST be built before either app (its `exports` point at `dist/`).
 - Typecheck all: `pnpm typecheck`.
 - Format: `pnpm format` (Prettier root config, printWidth 100, single quotes).

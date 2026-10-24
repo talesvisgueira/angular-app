@@ -5,6 +5,15 @@ import { ObjectLiteral } from 'typeorm';
 
 export const SYSTEM_USER = 'system';
 
+/** Propriedades de auditoria/ativação presentes em toda resposta de CRUD. */
+export const auditResponse = {
+  active: { type: 'boolean' },
+  userCreated: { type: 'string' },
+  userUpdated: { type: 'string' },
+  dataCreated: { type: 'string' },
+  dataUpdated: { type: 'string' },
+} as const;
+
 export interface Pagination {
   limit: number;
   offset: number;
@@ -31,6 +40,19 @@ export interface CrudRouteOptions<TEntity extends ObjectLiteral> {
   updateBody: Record<string, unknown>;
   response: Record<string, unknown>;
   prepare?: (body: Record<string, unknown>, request: FastifyRequest) => Record<string, unknown>;
+}
+
+export function withAudit(body: Record<string, unknown>): Record<string, unknown> {
+  const prepared = { ...body };
+  if (!prepared.id) {
+    prepared.id = randomUUID();
+  }
+  prepared.userCreated = SYSTEM_USER;
+  prepared.userUpdated = SYSTEM_USER;
+  if (prepared.active === undefined) {
+    prepared.active = true;
+  }
+  return prepared;
 }
 
 export function buildCrudRoutes<TEntity extends ObjectLiteral>(
@@ -82,13 +104,10 @@ export function buildCrudRoutes<TEntity extends ObjectLiteral>(
         },
       },
       async (request, reply) => {
-        const body = {
-          ...(options.prepare ? options.prepare(request.body as Record<string, unknown>, request) : (request.body as Record<string, unknown>)),
-        };
-        if (!body.id) {
-          body.id = randomUUID();
-        }
-        body.userCreated = SYSTEM_USER;
+        const raw = options.prepare
+          ? options.prepare(request.body as Record<string, unknown>, request)
+          : (request.body as Record<string, unknown>);
+        const body = withAudit(raw);
         const saved = await repository().save(repository().create(body as TEntity));
         return reply.status(201).send(saved);
       },
@@ -148,6 +167,7 @@ export function buildCrudRoutes<TEntity extends ObjectLiteral>(
           return reply.status(404).send({ message: 'Registro não encontrado.' });
         }
         Object.assign(found, request.body);
+        (found as Record<string, unknown>).userUpdated = SYSTEM_USER;
         const saved = await repo.save(found);
         return saved;
       },

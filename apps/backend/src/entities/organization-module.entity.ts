@@ -31,6 +31,9 @@ export class OrganizationModule {
   @Column({ name: 'data_created', type: 'datetime' })
   dataCreated!: Date;
 
+  @Column('varchar', { name: 'user_updated', length: 36 })
+  userUpdated!: string;
+
   @Column({ name: 'data_updated', type: 'datetime' })
   dataUpdated!: Date;
 

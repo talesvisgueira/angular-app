@@ -1,0 +1,30 @@
+<div class="page">
+  <header class="banner">
+    <div class="brand">
+      <img [src]="logoPath" [alt]="'Logo ' + systemName" class="logo" />
+      <span class="system-name">{{ systemName }}</span>
+    </div>
+
+    @if (user(); as currentUser) {
+      <div class="user-info">
+        <span class="user-name">{{ currentUser.name }}</span>
+        <span class="user-email">{{ currentUser.email }}</span>
+      </div>
+    }
+  </header>
+
+  <main class="content">
+    @if (user(); as currentUser) {
+      <h1>Seja bem-vindo(a), {{ currentUser.name }}!</h1>
+      <p>Você está autenticado no sistema. Explore o menu para começar.</p>
+    } @else {
+      <h1>Seja bem-vindo(a)!</h1>
+      <p>Você está autenticado no sistema. Explore o menu para começar.</p>
+    }
+  </main>
+
+  <footer class="footer">
+    <span>{{ copyright }}</span>
+    <span class="author">Desenvolvido por {{ author }}</span>
+  </footer>
+</div>

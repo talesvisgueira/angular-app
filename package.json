@@ -9,6 +9,8 @@
     "dev": "pnpm build:shared && pnpm -r --parallel --filter @monorepo/frontend --filter @monorepo/backend dev",
     "dev:frontend": "pnpm --filter @monorepo/frontend start",
     "dev:backend": "pnpm --filter @monorepo/backend dev",
+    "migration:run": "pnpm --filter @monorepo/backend migration:run",
+    "migration:revert": "pnpm --filter @monorepo/backend migration:revert",
     "start": "pnpm dev",
     "test": "pnpm -r --if-present test",
     "typecheck": "pnpm -r --if-present typecheck",

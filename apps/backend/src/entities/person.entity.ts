@@ -5,8 +5,8 @@ export class Person {
   @PrimaryColumn('varchar', { length: 36 })
   id!: string;
 
-  @Column('varchar', { name: 'codigo', length: 15, unique: true })
-  codigo!: string;
+  @Column('varchar', { length: 15, unique: true })
+  code!: string;
 
   @Column('varchar', { length: 150 })
   name!: string;
@@ -20,11 +20,17 @@ export class Person {
   @Column('varchar', { length: 100, unique: true })
   email!: string;
 
+  @Column('boolean', { default: true })
+  active!: boolean;
+
   @Column('varchar', { name: 'user_created', length: 36 })
   userCreated!: string;
 
   @Column({ name: 'data_created', type: 'datetime' })
   dataCreated!: Date;
+
+  @Column('varchar', { name: 'user_updated', length: 36 })
+  userUpdated!: string;
 
   @Column({ name: 'data_updated', type: 'datetime' })
   dataUpdated!: Date;
