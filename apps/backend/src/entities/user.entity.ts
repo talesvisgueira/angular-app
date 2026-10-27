@@ -7,7 +7,11 @@ import {
   ManyToOne,
   PrimaryColumn,
 } from 'typeorm';
+import bcrypt from 'bcryptjs';
 import { Person } from './person.entity.js';
+
+/** Prefixos de um hash bcrypt ($2a$, $2b$ ou $2y$ + custo). */
+const BCRYPT_PREFIX = /^\$2[aby]\$\d{2}\$/;
 
 @Entity('user')
 export class User {
@@ -50,10 +54,22 @@ export class User {
     const now = new Date();
     this.dataCreated = now;
     this.dataUpdated = now;
+    this.hashPassword();
   }
 
   @BeforeUpdate()
   touchAudit(): void {
     this.dataUpdated = new Date();
+    this.hashPassword();
+  }
+
+  /**
+   * Grava a senha apenas como hash bcrypt: valores em texto plano são
+   * hasheados; valores que já são hash (ex.: loads/re-saves) permanecem.
+   */
+  private hashPassword(): void {
+    if (typeof this.password === 'string' && !BCRYPT_PREFIX.test(this.password)) {
+      this.password = bcrypt.hashSync(this.password, 10);
+    }
   }
 }

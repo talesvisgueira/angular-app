@@ -24,6 +24,7 @@ import { InitRbacSchema1700000000000 } from './migrations/1700000000000-InitRbac
 import { AddAdminGeographyAndIdentityRefactor1700000001000 } from './migrations/1700000001000-AddAdminGeographyAndIdentityRefactor.js';
 import { AddCrudApiFoundation1700000002000 } from './migrations/1700000002000-AddCrudApiFoundation copy.js';
 import { AddNewDB1700000003000 } from './migrations/1700000003000-AddNewDB.js';
+import { HashPlaintextPasswords1700000004000 } from './migrations/1700000004000-HashPlaintextPasswords.js';
 
 export const ENTITIES = [
   Person,
@@ -51,6 +52,7 @@ export const MIGRATIONS = [
   AddAdminGeographyAndIdentityRefactor1700000001000,
   AddCrudApiFoundation1700000002000,
   AddNewDB1700000003000,
+  HashPlaintextPasswords1700000004000,
 ];
 
 export function ensureDatabaseDirectory(database: string): void {

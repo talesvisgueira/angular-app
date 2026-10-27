@@ -1,0 +1,21 @@
+<main class="splash" aria-busy="true">
+  <section class="splash-card">
+    <img class="splash-image" [src]="splashImagePath" [alt]="'Arte de abertura do ' + systemName" />
+
+    <div class="brand">
+      <img class="logo" [src]="logoPath" [alt]="'Logo ' + systemName" />
+      <h1>{{ systemName }}</h1>
+    </div>
+
+    <p class="tagline">Preparando tudo para você...</p>
+
+    <div class="progress" role="status">
+      <span class="sr-only">Carregando o sistema...</span>
+      <div class="progress-bar"></div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <span>{{ copyright }}</span>
+  </footer>
+</main>

@@ -3,14 +3,11 @@ import { provideHttpClientTesting, HttpTestingController } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { vi } from 'vitest';
-import type { LoginResponse } from '@monorepo/shared';
+import { sessionFixture } from '../testing/jwt';
 import { Login } from './login';
 import { SessionStore } from '../session/session-store';
 
-const response: LoginResponse = {
-  token: 'demo-token-123',
-  user: { id: 'u1', name: 'Maria Souza', email: 'maria@exemplo.com' },
-};
+const response = sessionFixture({ profiles: ['Administrador'] });
 
 describe('Login', () => {
   beforeEach(async () => {
@@ -33,6 +30,11 @@ describe('Login', () => {
       loginForm: { setValue: (v: Record<string, string>) => void };
     };
     fixture.detectChanges();
+    // Verificação de existência de usuários feita ao abrir a tela: com usuários,
+    // a tela de login permanece (cenário padrão dos testes abaixo).
+    TestBed.inject(HttpTestingController)
+      .expectOne('/api/auth/has-users')
+      .flush({ hasUsers: true });
     return { fixture, component };
   }
 
@@ -90,6 +92,28 @@ describe('Login', () => {
     expect(TestBed.inject(SessionStore).isAuthenticated()).toBe(false);
   });
 
+  it('permanece no login, exibe erro e não grava sessão quando a API responde 200 com token inválido', async () => {
+    const { fixture, component } = setup();
+    const router = TestBed.inject(Router);
+    const navigateSpy = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+
+    component.loginForm.setValue({ email: 'maria@exemplo.com', password: 'password123' });
+    const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+    form.dispatchEvent(new Event('submit'));
+
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne('/api/auth/login').flush({ token: 'demo-token-123', user: response.user });
+    await fixture.whenStable();
+
+    expect(navigateSpy).not.toHaveBeenCalled();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('.error-box')?.textContent).toContain(
+      'Resposta de autenticação inválida.',
+    );
+    expect(TestBed.inject(SessionStore).isAuthenticated()).toBe(false);
+    expect(sessionStorage.getItem('app.session')).toBeNull();
+  });
+
   it('não chama a API quando o formulário é inválido', () => {
     const { fixture } = setup();
 
@@ -100,5 +124,31 @@ describe('Login', () => {
     TestBed.inject(HttpTestingController).expectNone('/api/auth/login');
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('.error')?.textContent).toContain('Informe o e-mail.');
+  });
+
+  it('sem usuários cadastrados, redireciona para /signup ao abrir', async () => {
+    const fixture = TestBed.createComponent(Login);
+    fixture.detectChanges();
+
+    const router = TestBed.inject(Router);
+    const navigateSpy = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+
+    TestBed.inject(HttpTestingController)
+      .expectOne('/api/auth/has-users')
+      .flush({ hasUsers: false });
+    await fixture.whenStable();
+
+    expect(navigateSpy).toHaveBeenCalledWith(['/signup']);
+  });
+
+  it('com usuários cadastrados, permanece na tela de login', async () => {
+    const { fixture } = setup();
+    const router = TestBed.inject(Router);
+    const navigateSpy = vi.spyOn(router, 'navigate');
+
+    await fixture.whenStable();
+
+    expect(navigateSpy).not.toHaveBeenCalled();
+    expect(fixture.componentInstance).toBeTruthy();
   });
 });

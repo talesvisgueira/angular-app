@@ -1,8 +1,10 @@
 import { Component, inject } from '@angular/core';
 import { SYSTEM_AUTHOR, SYSTEM_COPYRIGHT, SYSTEM_LOGO_PATH, SYSTEM_NAME } from '../app-info';
 import { SessionStore } from '../session/session-store';
+import { Toolbar } from './toolbar/toolbar';
 
 @Component({
+  imports: [Toolbar],
   selector: 'app-main',
   styleUrl: './main.scss',
   templateUrl: './main.html',

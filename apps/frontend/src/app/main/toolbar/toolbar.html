@@ -1,0 +1,10 @@
+<nav class="toolbar">
+  <a routerLink="/main">Home</a>
+  <a routerLink="/admin">Admin</a>
+  <a routerLink="/help">Help</a>
+  @if (isAuthenticated()) {
+    <button type="button" class="session-button" (click)="logout()">Sair</button>
+  } @else {
+    <a routerLink="/login" class="session-button">Entrar</a>
+  }
+</nav>

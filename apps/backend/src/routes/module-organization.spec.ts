@@ -32,14 +32,20 @@ describe('CRUD de module_organization (integração com banco migrado)', () => {
         ...TEST_AUDIT,
       }),
     );
-    const organization = await dataSource.getRepository(Organization).save(
-      dataSource
-        .getRepository(Organization)
-        .create({ id: person.id, address: 'Rua 1', district: 'Centro', ...TEST_AUDIT }),
-    );
-    const system = await dataSource.getRepository(System).save(
-      dataSource.getRepository(System).create({ id: randomUUID(), name: 'Sistema Base', ...TEST_AUDIT }),
-    );
+    const organization = await dataSource
+      .getRepository(Organization)
+      .save(
+        dataSource
+          .getRepository(Organization)
+          .create({ id: person.id, address: 'Rua 1', district: 'Centro', ...TEST_AUDIT }),
+      );
+    const system = await dataSource
+      .getRepository(System)
+      .save(
+        dataSource
+          .getRepository(System)
+          .create({ id: randomUUID(), name: 'Sistema Base', ...TEST_AUDIT }),
+      );
     const module = await dataSource.getRepository(Module).save(
       dataSource.getRepository(Module).create({
         id: randomUUID(),

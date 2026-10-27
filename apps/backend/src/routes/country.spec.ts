@@ -76,7 +76,11 @@ describe('CRUD de country e state (integração com banco migrado)', () => {
     const response = await app.inject({
       method: 'POST',
       url: '/api/state',
-      payload: { countryId: '00000000-0000-0000-0000-000000000000', shortName: 'XX', name: 'Fantasma' },
+      payload: {
+        countryId: '00000000-0000-0000-0000-000000000000',
+        shortName: 'XX',
+        name: 'Fantasma',
+      },
     });
     expect(response.statusCode).toBe(409);
   });

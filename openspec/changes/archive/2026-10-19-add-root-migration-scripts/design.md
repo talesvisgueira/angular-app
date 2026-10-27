@@ -20,8 +20,8 @@ O backend já possui o fluxo de migrations implementado e estável: `apps/backen
 ## Decisions
 
 - **Delegação via `pnpm --filter`**: os scripts da raiz usam `pnpm --filter @monorepo/backend migration:run|revert`.
-  - *Por quê*: é o padrão já estabelecido na raiz (`dev:frontend`, `dev:backend`); o pnpm resolve o binário/bibliotecas no contexto do pacote alvo, sem `cd` embutido no script.
-  - *Alternativas consideradas*: `pnpm -C apps/backend migration:run` (equivalente, mas diverge do estilo existente) e duplicar a linha `tsx -r reflect-metadata ...` na raiz (rejeitado: duplica a implementação e acopla a raiz aos detalhes do CLI).
+  - _Por quê_: é o padrão já estabelecido na raiz (`dev:frontend`, `dev:backend`); o pnpm resolve o binário/bibliotecas no contexto do pacote alvo, sem `cd` embutido no script.
+  - _Alternativas consideradas_: `pnpm -C apps/backend migration:run` (equivalente, mas diverge do estilo existente) e duplicar a linha `tsx -r reflect-metadata ...` na raiz (rejeitado: duplica a implementação e acopla a raiz aos detalhes do CLI).
 - **Nomes dos scripts na raiz = nomes no backend** (`migration:run`, `migration:revert`): evita dois vocabulários para a mesma ação e mantém a saída de `pnpm run` previsível em qualquer diretório.
 - **Documentação no AGENTS.md** como parte da mudança: o AGENTS.md é a fonte de convenções de comandos; um script raiz sem lá estar documentado viola a própria convenção que o motivou.
 

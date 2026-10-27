@@ -11,8 +11,18 @@ export async function registerSwagger(app: FastifyInstance): Promise<void> {
         version: '1.0.0',
       },
       servers: [{ url: 'http://localhost:3000' }],
+      components: {
+        securitySchemes: {
+          bearerAuth: {
+            type: 'http',
+            scheme: 'bearer',
+            bearerFormat: 'JWT',
+          },
+        },
+      },
+      security: [{ bearerAuth: ['a-super-secret-key', 'another-super-secret-key'] }],
       tags: [
-        { name: 'auth', description: 'Autenticação (demo)' },
+        { name: 'auth', description: 'Autenticação e provisionamento inicial (primeira execução)' },
         { name: 'health', description: 'Saúde do serviço' },
       ],
     },
@@ -23,7 +33,21 @@ export async function registerSwagger(app: FastifyInstance): Promise<void> {
     uiConfig: {
       tagsSorter: 'alpha',
       operationsSorter: 'alpha',
-      docExpansion: 'none'
-    }
+      docExpansion: 'none',
+    },
+    uiHooks: {
+      onRequest: function (_request, _reply, next) {
+        next();
+      },
+      preHandler: function (_request, _reply, next) {
+        next();
+      },
+    },
+    staticCSP: true,
+    transformStaticCSP: (header) => header,
+    transformSpecification: (swaggerObject) => {
+      return swaggerObject;
+    },
+    transformSpecificationClone: true,
   });
 }

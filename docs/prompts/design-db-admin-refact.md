@@ -6,10 +6,10 @@ Como Engenheiro de Software especialista em um ecossistema Monorepo estruturado 
 
 1. Delete o campo organization_id da tabela user.
 2. Delete o campo person_id da tabela organization.
-3. Create a constraint foreign key fk_user_person_person_id na tabela user references person. 
+3. Create a constraint foreign key fk_user_person_person_id na tabela user references person.
 4. Create a constraint foreign key fk_organization_person_person_id na tabela organization references person.
 5. Crie os endpoints de CRUD para as tabelas existentes no banco de dados.
-6. Configure o swagger no backend para documentar os enpoints existentes. 
+6. Configure o swagger no backend para documentar os enpoints existentes.
 
 ## ⚙️ Diretrizes do Backend (Node.js + TypeORM)
 

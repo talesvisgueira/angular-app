@@ -26,22 +26,22 @@ O frontend hoje tem um único componente: `App` (`apps/frontend/src/app/`), que 
 
 `App` passa a ser apenas shell com `<router-outlet/>`; o formulário atual migra intacto (mesmos controles, validações e mensagens) para um componente `Login` standalone em `src/app/login/` e a nova tela em `src/app/main/`.
 
-- *Alternativa descartada*: manter o login em `App` e alternar telas por `@if` — replicaria manualmente o que o Router já dá (URLs, guarda, navegação) e `RouterOutlet` já está presente.
+- _Alternativa descartada_: manter o login em `App` e alternar telas por `@if` — replicaria manualmente o que o Router já dá (URLs, guarda, navegação) e `RouterOutlet` já está presente.
 - `''` → `redirectTo: 'main'` + guarda cobre o cenário "abrir o app" exigido pela spec `auth-session`.
 
 ### 2. Sessão: `SessionStore` com signals + `sessionStorage`
 
 Service standalone `SessionStore` (em `src/app/session/`) com `signal<Session | null>` (`Session = LoginResponse`). No sucesso do login: `set(response)` grava em `sessionStorage` (chave única, ex. `app.session`); na construção, rehidrata do storage. Acesso à tela principal somente via métodos do store (`user()`, `isAuthenticated()`).
 
-- *Por que `sessionStorage` e não `localStorage`*: o requisito é persistir durante a aba (refresh); `localStorage` estenderia a sessão para outras abas e após fechar o navegador, aumentando a exposição do token demo sem necessidade.
-- *Por que signals e não RxJS/NgRx*: o projeto já usa signals (`App`), o estado é pequeno e local; libs de estado seriam overkill.
+- _Por que `sessionStorage` e não `localStorage`_: o requisito é persistir durante a aba (refresh); `localStorage` estenderia a sessão para outras abas e após fechar o navegador, aumentando a exposição do token demo sem necessidade.
+- _Por que signals e não RxJS/NgRx_: o projeto já usa signals (`App`), o estado é pequeno e local; libs de estado seriam overkill.
 - Leitura/gravação do storage em `try/catch` com fallback para memória (modo privado/storage indisponível não podem quebrar o app).
 
 ### 3. Guarda funcional simples, sem validação de token
 
 `CanActivateFn` lê o `SessionStore`: com sessão → permite; sem sessão → `router.createUrlTree(['/login'])`. A API não expõe endpoint de validação de token, então a guarda confia na sessão local — coerente com o escopo demo (`demo-token-...`).
 
-- *Alternativa descartada*: guarda que chama a API para validar o token — não há endpoint na spec `user-authentication`; exigiria mudança de backend, fora de escopo.
+- _Alternativa descartada_: guarda que chama a API para validar o token — não há endpoint na spec `user-authentication`; exigiria mudança de backend, fora de escopo.
 
 ### 4. Constantes de identidade em arquivo único
 

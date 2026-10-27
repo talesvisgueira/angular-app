@@ -107,6 +107,7 @@ export function buildCrudRoutes<TEntity extends ObjectLiteral>(
         const raw = options.prepare
           ? options.prepare(request.body as Record<string, unknown>, request)
           : (request.body as Record<string, unknown>);
+        raw.id = randomUUID();
         const body = withAudit(raw);
         const saved = await repository().save(repository().create(body as TEntity));
         return reply.status(201).send(saved);

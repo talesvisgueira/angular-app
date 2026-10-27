@@ -19,7 +19,11 @@ describe('Erros centralizados e auditoria no CRUD de person', () => {
   });
 
   it('corpo sem campos obrigatórios responde 400 com { message }', async () => {
-    const response = await app.inject({ method: 'POST', url: '/api/person', payload: { name: 'Sem código' } });
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/person',
+      payload: { name: 'Sem código' },
+    });
     expect(response.statusCode).toBe(400);
     expect(typeof response.json().message).toBe('string');
   });
@@ -34,7 +38,10 @@ describe('Erros centralizados e auditoria no CRUD de person', () => {
   });
 
   it('id inexistente responde 404 com { message }', async () => {
-    const response = await app.inject({ method: 'GET', url: '/api/person/00000000-0000-0000-0000-000000000000' });
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/person/00000000-0000-0000-0000-000000000000',
+    });
     expect(response.statusCode).toBe(404);
     expect(typeof response.json().message).toBe('string');
   });

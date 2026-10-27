@@ -4,9 +4,7 @@ import { QueryFailedError } from 'typeorm';
 export function registerErrorHandler(app: FastifyInstance): void {
   app.setErrorHandler((error: FastifyError, request, reply) => {
     if (error.validation) {
-      return reply
-        .status(400)
-        .send({ message: `Requisição inválida: ${error.message}` });
+      return reply.status(400).send({ message: `Requisição inválida: ${error.message}` });
     }
 
     const statusCode = error.statusCode ?? 500;

@@ -30,7 +30,7 @@ pnpm-workspaces monorepo: Angular 22 frontend + Fastify/TypeScript backend + sha
 ## Backend
 
 - Dev with watch: `pnpm dev:backend` (tsx). Built output: `node apps/backend/dist/server.js`.
-- Demo auth: any valid email + password `password123` → `LoginResponse`; wrong password → 401; invalid body → 400.
+- DB-backed auth: `POST /api/auth/login` validates email/password against the database; passwords are stored as bcrypt hashes (hashed by entity hooks on save; legacy plaintext rows are converted by the `HashPlaintextPasswords` migration). Success returns a `LoginResponse` with a JWT (HS256, 20-minute `exp`) whose payload carries `sub`, `email`, `name` and `profiles` (active profile names via `organization_user_profile`). Wrong password/unknown email → 401; invalid body → 400. Token verification endpoint: `POST /api/auth/validate` (`Authorization: Bearer <jwt>`) → 200 with claims or 401. Signing secret comes from `JWT_SECRET` (dev fallback with a warning).
 - ESM + `module: NodeNext`: relative imports inside `src/` need the `.js` extension (e.g. `./routes/auth.js`).
 
 ## Gotchas

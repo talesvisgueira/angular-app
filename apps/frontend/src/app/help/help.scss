@@ -1,0 +1,23 @@
+.placeholder-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2rem;
+  text-align: center;
+
+  h1 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 600;
+    letter-spacing: -0.02rem;
+    color: var(--gray-900);
+  }
+
+  p {
+    margin: 0;
+    color: var(--gray-700);
+  }
+}

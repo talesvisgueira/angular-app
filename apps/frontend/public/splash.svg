@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" role="img" aria-label="Paisagem estilizada de montanhas ao entardecer">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1b2153" />
+      <stop offset="0.55" stop-color="#4147c4" />
+      <stop offset="1" stop-color="#8f9ff5" />
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#ffd9a0" stop-opacity="0.85" />
+      <stop offset="0.45" stop-color="#ff9d5c" stop-opacity="0.32" />
+      <stop offset="1" stop-color="#ff9d5c" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="sun" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffe8a8" />
+      <stop offset="1" stop-color="#ff9e57" />
+    </linearGradient>
+    <linearGradient id="ridge-far" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3f4ab8" />
+      <stop offset="1" stop-color="#2b3390" />
+    </linearGradient>
+    <linearGradient id="ridge-mid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#28308d" />
+      <stop offset="1" stop-color="#1c2368" />
+    </linearGradient>
+    <linearGradient id="ridge-near" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#171d52" />
+      <stop offset="1" stop-color="#0f1440" />
+    </linearGradient>
+  </defs>
+
+  <rect width="900" height="600" fill="url(#sky)" />
+
+  <g fill="#fff">
+    <circle cx="120" cy="90" r="2" opacity="0.9" />
+    <circle cx="210" cy="150" r="1.5" opacity="0.6" />
+    <circle cx="330" cy="70" r="2.2" opacity="0.8" />
+    <circle cx="430" cy="120" r="1.4" opacity="0.5" />
+    <circle cx="540" cy="60" r="2" opacity="0.85" />
+    <circle cx="660" cy="110" r="1.6" opacity="0.6" />
+    <circle cx="770" cy="70" r="2.3" opacity="0.9" />
+    <circle cx="840" cy="160" r="1.5" opacity="0.55" />
+    <circle cx="90" cy="220" r="1.6" opacity="0.5" />
+    <circle cx="640" cy="200" r="1.4" opacity="0.45" />
+    <circle cx="720" cy="250" r="1.3" opacity="0.4" />
+  </g>
+
+  <circle cx="450" cy="345" r="190" fill="url(#glow)" />
+  <circle cx="450" cy="345" r="72" fill="url(#sun)" />
+
+  <g stroke="#1b2153" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.7">
+    <path d="M560 240q9-10 18 0q9-10 18 0" />
+    <path d="M620 210q7-8 14 0q7-8 14 0" />
+  </g>
+
+  <path d="M0 432 88 356 168 408 258 322 352 406 432 350 518 412 606 336 698 402 792 348 900 416 900 600 0 600Z" fill="url(#ridge-far)" opacity="0.92" />
+  <path d="M0 486 108 412 208 468 318 396 420 472 530 406 640 470 758 416 900 482 900 600 0 600Z" fill="url(#ridge-mid)" />
+  <path d="M0 548 138 482 262 536 392 470 522 540 660 482 782 536 900 498 900 600 0 600Z" fill="url(#ridge-near)" />
+</svg>

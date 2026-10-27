@@ -1,20 +1,19 @@
 import { TestBed } from '@angular/core/testing';
-import type { LoginResponse } from '@monorepo/shared';
+import { provideRouter } from '@angular/router';
+import { sessionFixture } from '../testing/jwt';
 import { SYSTEM_AUTHOR, SYSTEM_COPYRIGHT, SYSTEM_NAME } from '../app-info';
 import { Main } from './main';
 
 const SESSION_STORAGE_KEY = 'app.session';
 
-const response: LoginResponse = {
-  token: 'demo-token-123',
-  user: { id: 'u1', name: 'Maria Souza', email: 'maria@exemplo.com' },
-};
+const response = sessionFixture({ profiles: ['Administrador'] });
 
 describe('Main', () => {
   beforeEach(() => {
     sessionStorage.clear();
     TestBed.configureTestingModule({
       imports: [Main],
+      providers: [provideRouter([])],
     }).compileComponents();
   });
 
@@ -69,5 +68,42 @@ describe('Main', () => {
     const footer = compiled.querySelector('.footer')?.textContent ?? '';
     expect(footer).toContain(SYSTEM_COPYRIGHT);
     expect(footer).toContain(SYSTEM_AUTHOR);
+  });
+
+  it('exibe a toolbar com os links Home, Admin e Help entre o banner e a área central', () => {
+    const fixture = renderWithSession();
+    const compiled = fixture.nativeElement as HTMLElement;
+
+    const toolbarHost = compiled.querySelector('app-toolbar');
+    expect(toolbarHost).toBeTruthy();
+    expect(toolbarHost?.querySelector('nav.toolbar')).toBeTruthy();
+
+    const banner = compiled.querySelector('.banner');
+    const content = compiled.querySelector('.content');
+    expect(banner?.nextElementSibling).toBe(toolbarHost);
+    expect(toolbarHost?.nextElementSibling).toBe(content);
+
+    const expected = [
+      ['Home', '/main'],
+      ['Admin', '/admin'],
+      ['Help', '/help'],
+    ] as const;
+    for (const [label, href] of expected) {
+      const anchor = toolbarHost?.querySelector<HTMLAnchorElement>(`a[href="${href}"]`);
+      expect(anchor?.textContent?.trim()).toBe(label);
+    }
+  });
+
+  it('exibe o botão de logout (Sair) na toolbar com sessão ativa', () => {
+    const fixture = renderWithSession();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('button.session-button')?.textContent?.trim()).toBe('Sair');
+  });
+
+  it('exibe o botão de login (Entrar) na toolbar sem sessão', () => {
+    const fixture = TestBed.createComponent(Main);
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('a.session-button')?.textContent?.trim()).toBe('Entrar');
   });
 });

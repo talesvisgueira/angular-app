@@ -27,10 +27,10 @@ O esquema real do banco é definido por `apps/backend/src/database/migrations/17
 ## Decisions
 
 1. **Banco como fonte de verdade; nenhuma migration nova.** A migration 3000 já define o esquema pretendido; editar migrations antigas quebraria bancos existentes (hash de histórico). Entidades e rotas se ajustam a ela.
-   - *Alternativa descartada*: migration "corretiva" adicional — duplicaria a definição do esquema.
+   - _Alternativa descartada_: migration "corretiva" adicional — duplicaria a definição do esquema.
 
 2. **Auditoria completa via hooks + `prepare`.** As entidades passam a mapear `active`, `user_created` e `user_updated`; `buildCrudRoutes` injeta `userCreated = userUpdated = SYSTEM_USER` (e `active = true` quando ausente) na criação, e o hook `@BeforeUpdate` renova `dataUpdated`/`userUpdated` na atualização. Motivo: colunas `NOT NULL` sem default (`user_created`, `user_updated`) fazem todo `INSERT` falhar hoje.
-   - *Alternativa descartada*: defaults no banco via migration — exigiria migration nova.
+   - _Alternativa descartada_: defaults no banco via migration — exigiria migration nova.
 
 3. **`CountryState` → `State`.** Novo arquivo `state.entity.ts` (`@Entity('state')`, colunas `short_name`/`name`), rota `state.ts` com prefixo `/api/state`; `country-state.entity.ts`/`country-state.ts` removidos. O frontend não consome a rota antiga.
 
@@ -41,7 +41,7 @@ O esquema real do banco é definido por `apps/backend/src/database/migrations/17
 6. **Novos recursos seguem o padrão existente.** `City`, `PersonAddress`, `PersonPhone`, `UserAuthenticationMode`, `System`, `ModuleOrganization` ganham entidade + rota `buildCrudRoutes` + registro em `server.ts`. Particularidades: `PersonPhone` usa colunas `numeric` (tipos `number` na entidade); `PersonAddress`/`PersonPhone` têm `person_id` nullable (FK só valida quando informado).
 
 7. **Login consulta o banco por email da pessoa.** `POST /api/auth/login` busca `user` com `join` em `person` por `person.email` e compara `password` (texto puro, mesmo formato gravado pelo CRUD de `user`). Sucesso → `LoginResponse` com `user.id` do usuário e `name`/`email` da pessoa; falha → 401 genérico (mesma mensagem para email inexistente e senha errada, sem revelar qual falhou). `isLoginRequest` e o DTO `LoginRequest`/`LoginResponse` do shared permanecem inalterados.
-   - *Alternativa descartada*: aceitar `username` também — mudaria o contrato do shared.
+   - _Alternativa descartada_: aceitar `username` também — mudaria o contrato do shared.
 
 8. **Atualização do `country.spec.ts` em harness reutilizável.** O setup (SQLite temporário + migrations + Fastify) vira helper compartilhado; specs novos para `state`, os 6 recursos novos e o login reutilizam o harness.
 

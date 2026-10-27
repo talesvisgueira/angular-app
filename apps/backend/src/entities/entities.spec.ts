@@ -207,17 +207,25 @@ describe('Entidades RBAC (metadata TypeORM)', () => {
     const systemId = metadata.findColumnWithPropertyPath('systemId');
     expect(systemId?.databaseName).toBe('system_id');
     expect(systemId?.isNullable).toBe(false);
-    expect(metadata.findRelationWithPropertyPath('system')?.inverseEntityMetadata.tableName).toBe('system');
-    expect(metadata.findRelationWithPropertyPath('organization')?.inverseEntityMetadata.tableName).toBe(
-      'organization',
+    expect(metadata.findRelationWithPropertyPath('system')?.inverseEntityMetadata.tableName).toBe(
+      'system',
     );
+    expect(
+      metadata.findRelationWithPropertyPath('organization')?.inverseEntityMetadata.tableName,
+    ).toBe('organization');
   });
 
   it('module_rule, profile_rule e organization_user_profile não possuem organization_id', () => {
     for (const entity of [ModuleRule, ProfileRule, OrganizationUserProfile]) {
       const metadata = dataSource.getMetadata(entity);
-      expect(metadata.findColumnWithDatabaseName('organization_id'), metadata.tableName).toBeUndefined();
-      expect(metadata.findRelationWithPropertyPath('organization'), metadata.tableName).toBeUndefined();
+      expect(
+        metadata.findColumnWithDatabaseName('organization_id'),
+        metadata.tableName,
+      ).toBeUndefined();
+      expect(
+        metadata.findRelationWithPropertyPath('organization'),
+        metadata.tableName,
+      ).toBeUndefined();
     }
   });
 

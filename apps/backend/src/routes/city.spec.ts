@@ -19,14 +19,26 @@ describe('CRUD de city (integração com banco migrado)', () => {
     dataSource = testApp.dataSource;
     close = testApp.close;
 
-    const country = await dataSource.getRepository(Country).save(
-      dataSource.getRepository(Country).create({ id: randomUUID(), shortName: 'BR', name: 'Brasil', ...TEST_AUDIT }),
-    );
-    const state = await dataSource.getRepository(State).save(
-      dataSource
-        .getRepository(State)
-        .create({ id: randomUUID(), countryId: country.id, shortName: 'SP', name: 'São Paulo', ...TEST_AUDIT }),
-    );
+    const country = await dataSource
+      .getRepository(Country)
+      .save(
+        dataSource
+          .getRepository(Country)
+          .create({ id: randomUUID(), shortName: 'BR', name: 'Brasil', ...TEST_AUDIT }),
+      );
+    const state = await dataSource
+      .getRepository(State)
+      .save(
+        dataSource
+          .getRepository(State)
+          .create({
+            id: randomUUID(),
+            countryId: country.id,
+            shortName: 'SP',
+            name: 'São Paulo',
+            ...TEST_AUDIT,
+          }),
+      );
     stateId = state.id;
   });
 
@@ -48,7 +60,11 @@ describe('CRUD de city (integração com banco migrado)', () => {
     const response = await app.inject({
       method: 'POST',
       url: '/api/city',
-      payload: { stateId: '00000000-0000-0000-0000-000000000000', shortName: 'FAN', name: 'Fantasma' },
+      payload: {
+        stateId: '00000000-0000-0000-0000-000000000000',
+        shortName: 'FAN',
+        name: 'Fantasma',
+      },
     });
     expect(response.statusCode).toBe(409);
   });

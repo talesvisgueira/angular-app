@@ -1,0 +1,116 @@
+<main class="signup-page">
+  <form class="signup-card" [formGroup]="signupForm" (ngSubmit)="onSubmit()" novalidate>
+    <h1>Criar acesso</h1>
+    <p class="subtitle">Cadastre a organização e o administrador para começar a usar o sistema</p>
+
+    <section class="group">
+      <h2>Organização</h2>
+
+      <label class="field">
+        <span>Nome da organização</span>
+        <input
+          type="text"
+          formControlName="organizationName"
+          placeholder="Minha Empresa Ltda"
+          autocomplete="organization"
+        />
+        @if (organizationName.touched && organizationName.hasError('required')) {
+          <small class="error">Informe o nome da organização.</small>
+        }
+      </label>
+
+      <label class="field">
+        <span>E-mail da organização</span>
+        <input
+          type="email"
+          formControlName="organizationEmail"
+          placeholder="contato@empresa.com.br"
+          autocomplete="email"
+        />
+        @if (organizationEmail.touched && organizationEmail.hasError('required')) {
+          <small class="error">Informe o e-mail da organização.</small>
+        } @else if (organizationEmail.touched && organizationEmail.hasError('email')) {
+          <small class="error">E-mail inválido.</small>
+        }
+      </label>
+    </section>
+
+    <section class="group">
+      <h2>Administrador</h2>
+
+      <label class="field">
+        <span>Nome do administrador</span>
+        <input
+          type="text"
+          formControlName="adminName"
+          placeholder="Maria Souza"
+          autocomplete="name"
+        />
+        @if (adminName.touched && adminName.hasError('required')) {
+          <small class="error">Informe o nome do administrador.</small>
+        }
+      </label>
+
+      <label class="field">
+        <span>E-mail do administrador</span>
+        <input
+          type="email"
+          formControlName="adminEmail"
+          placeholder="voce@empresa.com.br"
+          autocomplete="email"
+        />
+        @if (adminEmail.touched && adminEmail.hasError('required')) {
+          <small class="error">Informe o e-mail do administrador.</small>
+        } @else if (adminEmail.touched && adminEmail.hasError('email')) {
+          <small class="error">E-mail inválido.</small>
+        }
+      </label>
+
+      <label class="field">
+        <span>Usuário</span>
+        <input type="text" formControlName="username" placeholder="maria" autocomplete="username" />
+        @if (username.touched && username.hasError('required')) {
+          <small class="error">Informe o usuário.</small>
+        }
+      </label>
+
+      <label class="field">
+        <span>Senha</span>
+        <input
+          type="password"
+          formControlName="password"
+          placeholder="••••••"
+          autocomplete="new-password"
+        />
+        @if (password.touched && password.hasError('required')) {
+          <small class="error">Informe a senha.</small>
+        } @else if (password.touched && password.hasError('minlength')) {
+          <small class="error">A senha deve ter ao menos 6 caracteres.</small>
+        }
+      </label>
+
+      <label class="field">
+        <span>Confirmar senha</span>
+        <input
+          type="password"
+          formControlName="confirmPassword"
+          placeholder="••••••"
+          autocomplete="new-password"
+        />
+        @if (confirmPassword.touched && confirmPassword.hasError('required')) {
+          <small class="error">Confirme a senha.</small>
+        } @else if (confirmPassword.touched && signupForm.hasError('passwordMatch')) {
+          <small class="error">As senhas não conferem.</small>
+        }
+      </label>
+    </section>
+
+    <button type="submit" [disabled]="loading()">
+      {{ loading() ? 'Criando acesso...' : 'Criar acesso' }}
+    </button>
+
+    @if (error()) {
+      <p class="error-box" role="alert">{{ error() }}</p>
+    }
+  </form>
+</main>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR">
   <head>
     <meta charset="utf-8" />
     <title>AngularApp</title>
@@ -8,6 +8,65 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
   </head>
   <body>
-    <app-root></app-root>
+    <app-root>
+      <!-- Splash pré-bootstrap: exibida até o Angular assumir a rota /splash. -->
+      <div class="boot-splash">
+        <img src="logo.svg" alt="" width="56" height="56" />
+        <span class="boot-name">AngularApp</span>
+        <span class="boot-bar"></span>
+      </div>
+      <style>
+        body {
+          background: oklch(18% 0.07 264);
+        }
+        .boot-splash {
+          position: fixed;
+          inset: 0;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 1rem;
+          font-family: 'Inter', system-ui, sans-serif;
+          color: #fff;
+          background: radial-gradient(
+            120% 110% at 50% 0%,
+            oklch(42% 0.19 276) 0%,
+            oklch(29% 0.13 270) 48%,
+            oklch(18% 0.07 264) 100%
+          );
+        }
+        .boot-name {
+          font-size: 1.25rem;
+          font-weight: 600;
+          letter-spacing: -0.02rem;
+        }
+        .boot-bar {
+          position: relative;
+          width: 160px;
+          height: 4px;
+          overflow: hidden;
+          border-radius: 999px;
+          background: rgba(255, 255, 255, 0.18);
+        }
+        .boot-bar::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          width: 40%;
+          border-radius: inherit;
+          background: #fff;
+          animation: boot-slide 1s ease-in-out infinite;
+        }
+        @keyframes boot-slide {
+          from {
+            transform: translateX(-100%);
+          }
+          to {
+            transform: translateX(250%);
+          }
+        }
+      </style>
+    </app-root>
   </body>
 </html>

@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import type { LoginRequest, LoginResponse } from '@monorepo/shared';
+import type { HasUsersResponse, LoginRequest, LoginResponse } from '@monorepo/shared';
 import { SessionStore } from '../session/session-store';
 
 @Component({
@@ -38,6 +38,23 @@ export class Login {
     return this.loginForm.controls.password;
   }
 
+  constructor() {
+    // Direcionamento de entrada: sem usuários cadastrados, o sistema abre o
+    // cadastro inicial em vez da tela de login.
+    if (!this.sessionStore.hasValidSession()) {
+      this.http.get<HasUsersResponse>('/api/auth/has-users').subscribe({
+        next: (response) => {
+          if (!response.hasUsers) {
+            void this.router.navigate(['/signup']);
+          }
+        },
+        error: () => {
+          // Falha de rede: permanece na tela de login (comportamento padrão).
+        },
+      });
+    }
+  }
+
   protected onSubmit(): void {
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
@@ -52,7 +69,12 @@ export class Login {
     this.http.post<LoginResponse>('/api/auth/login', credentials).subscribe({
       next: (response) => {
         this.loading.set(false);
-        this.sessionStore.set(response);
+
+        if (!this.sessionStore.set(response)) {
+          this.error.set('Resposta de autenticação inválida.');
+          return;
+        }
+
         this.loginForm.reset();
         void this.router.navigate(['/main']);
       },
